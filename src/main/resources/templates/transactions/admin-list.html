@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gelir/Gider İşlemleri - Apartman Yönetim Sistemi</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.1.3/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/5.15.4/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="layout/main :: header"></div>
+    
+    <div class="container my-4 content-wrapper">
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h2 class="card-title">
+                                <i class="fas fa-exchange-alt me-2"></i>Gelir/Gider İşlemleri
+                            </h2>
+                            <div sec:authorize="hasRole('ADMIN')">
+                                <a th:href="@{/transactions/create/income}" class="btn btn-success me-2">
+                                    <i class="fas fa-plus me-1"></i>Yeni Gelir Ekle
+                                </a>
+                                <a th:href="@{/transactions/create/expense}" class="btn btn-danger">
+                                    <i class="fas fa-minus me-1"></i>Yeni Gider Ekle
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="summary-box summary-income">
+                    <h5>Toplam Gelir</h5>
+                    <h3 th:text="${'₺' + totalIncome}">₺0.00</h3>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="summary-box summary-expense">
+                    <h5>Toplam Gider</h5>
+                    <h3 th:text="${'₺' + totalExpense}">₺0.00</h3>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="summary-box summary-balance">
+                    <h5>Kasa Bakiyesi</h5>
+                    <h3 th:text="${'₺' + currentBalance}">₺0.00</h3>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#all" data-bs-toggle="tab">Tüm İşlemler</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/transactions/income}">Gelirler</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/transactions/expense}">Giderler</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="all">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Tarih</th>
+                                                <th>Tür</th>
+                                                <th>Kategori</th>
+                                                <th>Açıklama</th>
+                                                <th>Daire</th>
+                                                <th>Tutar</th>
+                                                <th>İşlemler</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="transaction : ${transactions}" th:if="${transactions != null && !transactions.empty}">
+                                                <td th:text="${#temporals.format(transaction.date, 'dd/MM/yyyy')}">01/01/2025</td>
+                                                <td>
+                                                    <span th:if="${transaction.type.name() == 'INCOME'}" class="badge bg-success">Gelir</span>
+                                                    <span th:if="${transaction.type.name() == 'EXPENSE'}" class="badge bg-danger">Gider</span>
+                                                </td>
+                                                <td th:text="${transaction.category.name()}">DUES</td>
+                                                <td th:text="${transaction.description}">Aidat ödemesi</td>
+                                                <td th:text="${transaction.apartment != null ? transaction.apartment.apartmentNumber : '-'}">101</td>
+                                                <td th:text="${'₺' + transaction.amount}">₺300.00</td>
+                                                <td>
+                                                    <div class="btn-group">
+                                                        <a th:href="@{/transactions/{id}(id=${transaction.id})}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="Görüntüle">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        <a sec:authorize="hasRole('ADMIN')" th:href="@{/transactions/{id}/edit(id=${transaction.id})}" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" title="Düzenle">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <a sec:authorize="hasRole('ADMIN')" th:href="@{/transactions/{id}/delete(id=${transaction.id})}" class="btn btn-sm btn-danger confirm-delete" data-bs-toggle="tooltip" title="Sil">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr th:if="${transactions == null || transactions.empty}">
+                                                <td colspan="7" class="text-center">İşlem kaydı bulunamadı.</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div th:replace="layout/main :: footer"></div>
+
+    <script th:src="@{/webjars/jquery/3.6.0/jquery.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/5.1.3/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

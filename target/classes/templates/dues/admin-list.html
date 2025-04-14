@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aidatlar - Apartman Yönetim Sistemi</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.1.3/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/5.15.4/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="layout/main :: header"></div>
+    
+    <div class="container my-4 content-wrapper">
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h2 class="card-title">
+                                <i class="fas fa-money-bill-wave me-2"></i>Aidatlar
+                            </h2>
+                            <div sec:authorize="hasRole('ADMIN')">
+                                <a th:href="@{/dues/create}" class="btn btn-primary me-2">
+                                    <i class="fas fa-plus me-1"></i>Yeni Aidat Ekle
+                                </a>
+                                <a th:href="@{/dues/generate-monthly}" class="btn btn-success">
+                                    <i class="fas fa-calendar-plus me-1"></i>Aylık Aidat Oluştur
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Daire No</th>
+                                        <th>Dönem</th>
+                                        <th>Tutar</th>
+                                        <th>Son Ödeme</th>
+                                        <th>Ödeme Tarihi</th>
+                                        <th>Durum</th>
+                                        <th>İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="due : ${dues}" th:if="${dues != null && !dues.empty}">
+                                        <td th:text="${due.apartment.apartmentNumber}">101</td>
+                                        <td th:text="${due.month + '/' + due.year}">01/2025</td>
+                                        <td th:text="${'₺' + due.amount}">₺300.00</td>
+                                        <td th:text="${#temporals.format(due.dueDate, 'dd/MM/yyyy')}">15/01/2025</td>
+                                        <td th:text="${due.paid ? #temporals.format(due.paymentDate, 'dd/MM/yyyy') : '-'}">-</td>
+                                        <td>
+                                            <span th:if="${due.paid}" class="badge bg-success">Ödendi</span>
+                                            <span th:unless="${due.paid}" class="badge bg-danger">Ödenmedi</span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <a th:href="@{/dues/{id}(id=${due.id})}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="Görüntüle">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a sec:authorize="hasRole('ADMIN')" th:href="@{/dues/{id}/edit(id=${due.id})}" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" title="Düzenle">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a sec:authorize="hasRole('ADMIN')" th:if="${!due.paid}" th:href="@{/dues/{id}/mark-paid(id=${due.id})}" class="btn btn-sm btn-success" data-bs-toggle="tooltip" title="Ödendi İşaretle">
+                                                    <i class="fas fa-check"></i>
+                                                </a>
+                                                <a sec:authorize="hasRole('ADMIN')" th:if="${!due.paid}" class="btn btn-sm btn-primary whatsapp-notify" th:data-due-id="${due.id}" data-bs-toggle="tooltip" title="WhatsApp Bildirim Gönder">
+                                                    <i class="fab fa-whatsapp"></i>
+                                                </a>
+                                                <a sec:authorize="hasRole('ADMIN')" th:href="@{/dues/{id}/delete(id=${due.id})}" class="btn btn-sm btn-danger confirm-delete" data-bs-toggle="tooltip" title="Sil">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${dues == null || dues.empty}">
+                                        <td colspan="7" class="text-center">Aidat kaydı bulunamadı.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div th:replace="layout/main :: footer"></div>
+
+    <script th:src="@{/webjars/jquery/3.6.0/jquery.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/5.1.3/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

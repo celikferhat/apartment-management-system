@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ana Sayfa - Apartman Yönetim Sistemi</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.1.3/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/5.15.4/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="layout/main :: header"></div>
+    
+    <div class="container my-4 content-wrapper">
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">
+                            <i class="fas fa-tachometer-alt me-2"></i>Ana Sayfa
+                        </h2>
+                        <p class="card-text" sec:authorize="hasRole('ADMIN')">
+                            Hoş geldiniz, <span th:text="${user.name + ' ' + user.surname}">Yönetici</span>. 
+                            Apartman yönetim sisteminde tüm işlemleri gerçekleştirebilirsiniz.
+                        </p>
+                        <p class="card-text" sec:authorize="hasRole('RESIDENT')">
+                            Hoş geldiniz, <span th:text="${user.name + ' ' + user.surname}">Daire Sakini</span>. 
+                            Aidat ödemelerinizi ve apartman gelir-giderlerini görüntüleyebilirsiniz.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Admin Dashboard -->
+        <div sec:authorize="hasRole('ADMIN')">
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card dashboard-card">
+                        <div class="card-body text-center">
+                            <div class="dashboard-icon mb-3">
+                                <i class="fas fa-home"></i>
+                            </div>
+                            <h5 class="card-title">Daireler</h5>
+                            <p class="card-text">Daire yönetimi ve daire sakini atama işlemleri</p>
+                            <a th:href="@{/apartments}" class="btn btn-primary">Daireleri Yönet</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card dashboard-card">
+                        <div class="card-body text-center">
+                            <div class="dashboard-icon mb-3">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <h5 class="card-title">Aidatlar</h5>
+                            <p class="card-text">Aidat oluşturma ve ödeme takibi işlemleri</p>
+                            <a th:href="@{/dues}" class="btn btn-primary">Aidatları Yönet</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card dashboard-card">
+                        <div class="card-body text-center">
+                            <div class="dashboard-icon mb-3">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                            <h5 class="card-title">Gelir/Gider</h5>
+                            <p class="card-text">Apartman gelir ve gider işlemleri</p>
+                            <a th:href="@{/transactions}" class="btn btn-primary">İşlemleri Yönet</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card dashboard-card">
+                        <div class="card-body text-center">
+                            <div class="dashboard-icon mb-3">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <h5 class="card-title">Raporlar</h5>
+                            <p class="card-text">Finansal raporlar ve istatistikler</p>
+                            <a th:href="@{/transactions/report}" class="btn btn-primary">Raporları Görüntüle</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-exclamation-circle me-2"></i>Ödenmemiş Aidatlar
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Daire</th>
+                                            <th>Dönem</th>
+                                            <th>Tutar</th>
+                                            <th>Son Ödeme</th>
+                                            <th>İşlemler</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Unpaid dues will be listed here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-money-bill-alt me-2"></i>Son İşlemler
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Tarih</th>
+                                            <th>Tür</th>
+                                            <th>Kategori</th>
+                                            <th>Tutar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Recent transactions will be listed here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Resident Dashboard -->
+        <div sec:authorize="hasRole('RESIDENT')">
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card dashboard-card">
+                        <div class="card-body text-center">
+                            <div class="dashboard-icon mb-3">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <h5 class="card-title">Aidatlarım</h5>
+                            <p class="card-text">Aidat ödemelerinizi görüntüleyin</p>
+                            <a th:href="@{/dues}" class="btn btn-primary">Aidatları Görüntüle</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card dashboard-card">
+                        <div class="card-body text-center">
+                            <div class="dashboard-icon mb-3">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                            <h5 class="card-title">Apartman Gelir/Gider</h5>
+                            <p class="card-text">Apartman finansal işlemlerini görüntüleyin</p>
+                            <a th:href="@{/transactions}" class="btn btn-primary">İşlemleri Görüntüle</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card dashboard-card">
+                        <div class="card-body text-center">
+                            <div class="dashboard-icon mb-3">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <h5 class="card-title">Raporlar</h5>
+                            <p class="card-text">Apartman finansal raporlarını görüntüleyin</p>
+                            <a th:href="@{/transactions/report}" class="btn btn-primary">Raporları Görüntüle</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-money-bill-wave me-2"></i>Aidatlarım
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Dönem</th>
+                                            <th>Tutar</th>
+                                            <th>Son Ödeme</th>
+                                            <th>Durum</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Resident's dues will be listed here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-info-circle me-2"></i>Apartman Bilgileri
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="summary-box summary-income">
+                                        <h5>Toplam Gelir</h5>
+                                        <h3>₺0.00</h3>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="summary-box summary-expense">
+                                        <h5>Toplam Gider</h5>
+                                        <h3>₺0.00</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="summary-box summary-balance">
+                                        <h5>Kasa Bakiyesi</h5>
+                                        <h3>₺0.00</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div th:replace="layout/main :: footer"></div>
+
+    <script th:src="@{/webjars/jquery/3.6.0/jquery.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/5.1.3/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

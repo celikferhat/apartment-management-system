@@ -40,8 +40,6 @@
                                     <tr>
                                         <th>Daire No</th>
                                         <th>Kat</th>
-                                        <th>Oda Sayısı</th>
-                                        <th>Alan (m²)</th>
                                         <th>Daire Sakini</th>
                                         <th>Durum</th>
                                         <th>İşlemler</th>
@@ -51,8 +49,7 @@
                                     <tr th:each="apartment : ${apartments}" th:if="${apartments != null && !apartments.empty}">
                                         <td th:text="${apartment.apartmentNumber}">101</td>
                                         <td th:text="${apartment.floor}">1</td>
-                                        <td th:text="${apartment.numberOfRooms}">3</td>
-                                        <td th:text="${apartment.area}">120</td>
+
                                         <td th:text="${apartment.resident != null ? apartment.resident.name + ' ' + apartment.resident.surname : '-'}">Ali Yılmaz</td>
                                         <td>
                                             <span th:if="${apartment.occupied}" class="badge bg-success">Dolu</span>

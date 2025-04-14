@@ -58,6 +58,11 @@ public class AuthController {
         return "redirect:/login";
     }
 
+    @GetMapping("/")
+    public String homeRedirect() {
+        return "redirect:/dashboard"; // veya doğrudan bir sayfa gösterebilirsin
+    }
+
     @GetMapping("/profile")
     public String profile(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
